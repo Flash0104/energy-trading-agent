@@ -15,16 +15,24 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Database Connection
-DB_URL = os.getenv("DATABASE_URL", "postgresql://user:password@db:5432/energy_db")
-AGENT_URL = os.getenv("AGENT_URL", "http://agent:8000")
+# Configuration
+AGENT_URL = os.getenv("AGENT_URL", "http://energy-trading-agent:8000")
+# Prioritize the full DATABASE_URL if provided (e.g. from Streamlit Secrets)
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    # Fallback for local Docker
+    DB_USER = os.getenv("POSTGRES_USER", "atia")
+    DB_PASSWORD = os.getenv("POSTGRES_PASSWORD", "securepassword")
+    DB_HOST = os.getenv("DB_HOST", "db")
+    DB_NAME = os.getenv("POSTGRES_DB", "atia_db")
+    DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5432/{DB_NAME}"
 
 @st.cache_resource
-def get_db_engine():
-    return create_engine(DB_URL)
+def init_connection():
+    return create_engine(DATABASE_URL)
 
 def load_prices(start_dt, end_dt):
-    engine = get_db_engine()
+    engine = init_connection()
     query = f"""
     SELECT timestamp, price, zone 
     FROM dayahead_prices 
