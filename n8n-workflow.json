@@ -1,0 +1,125 @@
+{
+    "name": "Energy Trading Insight Agent Orchestrator",
+    "nodes": [
+        {
+            "parameters": {
+                "path": "run-agent",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1,
+            "position": [
+                250,
+                300
+            ],
+            "webhookId": "run-agent-webhook"
+        },
+        {
+            "parameters": {
+                "method": "GET",
+                "url": "http://agent:8000/insights/smard",
+                "options": {}
+            },
+            "name": "Get SMARD Insights",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                500,
+                200
+            ]
+        },
+        {
+            "parameters": {
+                "method": "GET",
+                "url": "http://agent:8000/insights/news",
+                "options": {}
+            },
+            "name": "Get News Insights",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                500,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "mode": "wait"
+            },
+            "name": "Merge Insights",
+            "type": "n8n-nodes-base.merge",
+            "typeVersion": 2,
+            "position": [
+                750,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ $json }}",
+                "options": {}
+            },
+            "name": "Respond to Webhook",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                1000,
+                300
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Get SMARD Insights",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Get News Insights",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get SMARD Insights": {
+            "main": [
+                [
+                    {
+                        "node": "Merge Insights",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get News Insights": {
+            "main": [
+                [
+                    {
+                        "node": "Merge Insights",
+                        "type": "main",
+                        "index": 1
+                    }
+                ]
+            ]
+        },
+        "Merge Insights": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}
