@@ -1,10 +1,19 @@
 fastapi
 uvicorn
+sqlalchemy
+psycopg2-binary
+pgvector
 httpx
 python-dotenv
-pydantic
+beautifulsoup4
+lxml
 openai
-pytest
+pandas
+numpy
+# Dashboard Dependencies
+streamlit
+plotly
+requests
 sqlalchemy
 psycopg2-binary
 pgvector
