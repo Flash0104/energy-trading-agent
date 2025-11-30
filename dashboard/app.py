@@ -42,12 +42,12 @@ def load_prices(start_dt, end_dt):
     return pd.read_sql(query, engine)
 
 def load_news():
-    engine = get_db_engine()
+    engine = init_connection()
     query = "SELECT published, title, summary, url FROM energy_news ORDER BY published DESC LIMIT 20"
     return pd.read_sql(query, engine)
 
 def load_weather(start_dt, end_dt):
-    engine = get_db_engine()
+    engine = init_connection()
     query = f"""
     SELECT timestamp, temperature, wind_speed, solar_radiation 
     FROM weather_data 
